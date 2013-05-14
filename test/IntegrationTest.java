@@ -20,7 +20,24 @@ public class IntegrationTest {
         running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, new Callback<TestBrowser>() {
             public void invoke(TestBrowser browser) {
                 browser.goTo("http://localhost:3333");
-                assertThat(browser.pageSource()).contains("Your new application is ready.");
+                assertThat(browser.pageSource()).contains("MyBBS");
+            }
+        });
+    }
+    
+    @Test
+    public void メアド非表示になるか() {
+        running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, new Callback<TestBrowser>() {
+            public void invoke(TestBrowser browser) {
+                browser.goTo("http://localhost:3333");
+                browser.fill("#name").with("hoge");
+                browser.fill("#mail").with("hoge@dwango");
+                browser.click("#isMailPrivate");
+                browser.fill("#content").with("ほげー");
+                browser.submit("form");
+                browser.await();
+                assertThat(browser.url()).isEqualTo("http://localhost:3333/");
+                assertThat(browser.pageSource()).contains("秘密");
             }
         });
     }
